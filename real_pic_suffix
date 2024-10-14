@@ -1,0 +1,41 @@
+import os
+from PIL import Image
+
+# 需要的依赖
+# pip install pillow
+
+# 支持的图片格式
+SUPPORTED_FORMATS = {
+    "JPEG": "jpg",
+    "PNG": "png",
+    "WEBP": "webp"
+}
+
+def check_image_format_and_extension(root_dir):
+    for dirpath, _, filenames in os.walk(root_dir):
+        for filename in filenames:
+            file_path = os.path.join(dirpath, filename)
+            file_extension = filename.split(".")[-1].lower()
+
+            try:
+                # 获取实际的图片格式
+                with Image.open(file_path) as img:
+                    actual_format = img.format
+                    if actual_format in SUPPORTED_FORMATS:
+                        actual_extension = SUPPORTED_FORMATS[actual_format]
+                        if actual_extension != file_extension:
+                            correct_file_path = file_path.rsplit(".", 1)[0] + "." + actual_extension
+                            # 重命名
+                            os.rename(file_path, correct_file_path)
+                            print(f"已将文件 {file_path} 重命名为 {correct_file_path}")
+                        else:
+                            print(f"文件 {file_path} 的格式与后缀名匹配")
+                    else:
+                        print(f"文件 {file_path} 的格式 {actual_format} 不支持")
+            except Exception as e:
+                print(f"处理文件 {file_path} 时出错: {e}")
+
+if __name__ == "__main__":
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    print(f"正在检查文件夹: {current_dir}")
+    check_image_format_and_extension(current_dir)
