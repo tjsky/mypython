@@ -1,6 +1,9 @@
 import os
 import pandas as pd
 
+# 需要的依赖 pip install pandas openpyxl
+
+
 # 定义要查找和替换的内容
 to_replace = [
     "查找内容1",
