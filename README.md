@@ -11,4 +11,4 @@
 将Excel表格转化为md格式
 
 ### Excel_Replace
-批量替换文件下所有Excel表格的内容
+批量替换文件夹下所有Excel表格的内容
