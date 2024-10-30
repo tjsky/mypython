@@ -1,0 +1,41 @@
+import os
+import pandas as pd
+
+# 定义要查找和替换的内容
+to_replace = [
+    "查找内容1",
+    "查找内容2",
+    "查找内容3",
+    "查找内容4"
+]
+new_word = "替换为"
+
+def replace_urls_in_excel(file_path):
+    # 遍历Excel
+    excel_data = pd.read_excel(file_path, sheet_name=None)
+    for sheet_name, sheet_data in excel_data.items():
+        # 替换
+        for col in sheet_data.columns:
+            if sheet_data[col].dtype == object: 
+                for url in to_replace:
+                    sheet_data[col] = sheet_data[col].str.replace(url, new_word, regex=False)
+        
+        # 写回Excel
+        excel_data[sheet_name] = sheet_data
+    
+    # 保存
+    with pd.ExcelWriter(file_path, engine='openpyxl') as writer:
+        for sheet_name, sheet_data in excel_data.items():
+            sheet_data.to_excel(writer, sheet_name=sheet_name, index=False)
+
+# 获取脚本所在的目录，遍历目录及子目录
+base_dir = os.path.dirname(os.path.abspath(__file__))
+for root, _, files in os.walk(base_dir):
+    for filename in files:
+        if filename.endswith(".xlsx") or filename.endswith(".xls"):
+            file_path = os.path.join(root, filename)
+            try:
+                replace_urls_in_excel(file_path)
+                print(f"{filename} 替换完成")
+            except Exception as e:
+                print(f"处理文件 {filename} 时出错：{e}")
