@@ -12,3 +12,6 @@
 
 ### Excel_Replace
 批量替换文件夹下所有Excel表格的内容
+
+### cut_video
+把视频最后面的贴片广告都给我剪了
