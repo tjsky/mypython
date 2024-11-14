@@ -1,0 +1,24 @@
+import os
+import subprocess
+
+video_folder = os.getcwd()
+# 设置要删除的时间长度(秒数)
+time_to_cut = '225'  
+
+for filename in os.listdir(video_folder):
+    if filename.endswith('.mp4'):
+        file_path = os.path.join(video_folder, filename)
+        # 输出的文件加前缀"out_"
+        output_path = os.path.join(video_folder, f'out_{filename}')
+        # 获取视频时长
+        result = subprocess.run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1', file_path], stdout=subprocess.PIPE, text=True)
+        duration = float(result.stdout.strip())
+        # 计算一下新的视频时长
+        new_duration = duration - float(time_to_cut)  
+        if new_duration > 0:
+            # 上吧FFmpeg
+            subprocess.run(['ffmpeg', '-i', file_path, '-t', str(new_duration), '-c', 'copy', output_path])
+        else:
+            print(f'视频 {filename} 的时长不足以裁剪 {time_to_cut} 秒')
+
+print('所有视频处理完成。')
