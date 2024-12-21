@@ -7,6 +7,9 @@
 ### rename_time.ps1
 根据文件修改时间，修改文件名前缀
 
+### rename_time.py
+根据文件修改时间，修改文件名前缀（受限于PS的可用参数，上边那个不好用，就用Python重写了一个）
+
 ### excel2md.py
 将Excel表格转化为md格式
 
