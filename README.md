@@ -1,6 +1,9 @@
 # mypython
 自己用的一些小程序啥的,虽然仓库名里有python但其实啥都有
 
+### YMFolderSort.py
+根据文件夹名称中的年份和月份整理文件夹
+
 ### real_pic_suffix.py
 纠正错误的图片后缀名
 
