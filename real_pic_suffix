@@ -1,57 +1,85 @@
 import os
 from PIL import Image
 import io
+from concurrent.futures import ThreadPoolExecutor
+import logging
 
-# 需要的依赖
-# pip install pillow
+# 需要安装的依赖
+# pip install pillow pillow-heif pillow-avif-plugin
 
-# 设定支持的图片格式
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+# 扩展支持的图片格式（格式名 -> 标准后缀）
 SUPPORTED_FORMATS = {
     "JPEG": "jpg",
     "PNG": "png",
-    "WEBP": "webp"
+    "WEBP": "webp",
+    "GIF": "gif",
+    "BMP": "bmp",
+    "TIFF": "tiff",
+    "HEIC": "heic",  
+    "AVIF": "avif"   
 }
 
+# 支持的扩展名（小写）
+VALID_EXTENSIONS = {v.lower() for v in SUPPORTED_FORMATS.values()} | {"jpeg", "tif"}
+
 def is_image_file(filename):
-    # 只处理设定的图片格式
-    valid_extensions = {"jpg", "jpeg", "png", "webp"}
-    return filename.split(".")[-1].lower() in valid_extensions
+    return filename.split(".")[-1].lower() in VALID_EXTENSIONS
+
+def process_file(file_path):
+    try:
+        filename = os.path.basename(file_path)
+        file_extension = filename.split(".")[-1].lower()
+        
+        # 读取文件到内存
+        with open(file_path, "rb") as file:
+            image_data = io.BytesIO(file.read())
+        
+        # 检测图片实际格式
+        with Image.open(image_data) as img:
+            actual_format = img.format
+            if actual_format not in SUPPORTED_FORMATS:
+                logging.warning(f"文件 {file_path} 的格式 {actual_format} 不支持")
+                return
+            
+            correct_extension = SUPPORTED_FORMATS[actual_format]
+            if correct_extension == file_extension:
+                logging.info(f"格式匹配: {file_path}")
+                return
+            
+            # 重命名文件为真实格式
+            base_name = os.path.splitext(filename)[0]
+            new_filename = f"{base_name}.{correct_extension}"
+            new_path = os.path.join(os.path.dirname(file_path), new_filename)
+            
+            # 文件名冲突解决
+            counter = 1
+            while os.path.exists(new_path):
+                new_filename = f"{base_name}_{counter}.{correct_extension}"
+                new_path = os.path.join(os.path.dirname(file_path), new_filename)
+                counter += 1
+            
+            os.rename(file_path, new_path)
+            logging.info(f"重命名成功: {file_path} -> {new_path}")
+    
+    except Exception as e:
+        logging.error(f"处理文件 {file_path} 失败: {str(e)}", exc_info=True)
 
 def check_image_format_and_extension(root_dir):
+    file_paths = []
     for dirpath, _, filenames in os.walk(root_dir):
         for filename in filenames:
             if not is_image_file(filename):
-                # 跳过非图片文件
                 continue
-            
             file_path = os.path.join(dirpath, filename)
-            file_extension = filename.split(".")[-1].lower()
-
-            try:
-                # 读取文件并加载到内存中来检测图片格式，不然一会儿改名时文件会被占用
-                with open(file_path, "rb") as file:
-                    image_data = io.BytesIO(file.read())
-
-                with Image.open(image_data) as img:
-                    actual_format = img.format
-                    if actual_format in SUPPORTED_FORMATS:
-                        actual_extension = SUPPORTED_FORMATS[actual_format]
-                        if actual_extension != file_extension:
-                            # 使用临时文件名.temp来避免重命名冲突
-                            temp_file_path = file_path + ".temp"
-                            os.rename(file_path, temp_file_path)
-                            correct_file_path = temp_file_path.rsplit(".", 2)[0] + "." + actual_extension
-                            os.rename(temp_file_path, correct_file_path)
-                            print(f"已将文件 {file_path} 重命名为 {correct_file_path}")
-                        else:
-                            print(f"文件 {file_path} 的格式与后缀名匹配")
-                    else:
-                        print(f"文件 {file_path} 的格式 {actual_format} 不支持")
-            except Exception as e:
-                print(f"处理文件 {file_path} 时出错: {e}")
+            file_paths.append(file_path)
+    
+    # 并行处理提高速度
+    with ThreadPoolExecutor(max_workers=os.cpu_count() * 2) as executor:
+        executor.map(process_file, file_paths)
 
 if __name__ == "__main__":
-    # 获取当前.py文件所在目录
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    print(f"正在检查文件夹: {current_dir}")
+    logging.info(f"开始检查目录: {current_dir}")
     check_image_format_and_extension(current_dir)
