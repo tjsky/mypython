@@ -1,11 +1,16 @@
 # mypython
 自己用的一些小程序啥的,虽然仓库名里有python但其实啥都有
 
+### img_validator.py
+扫描指定目录下图片文件是否有损坏的，生成html格式的报告
+
+命令：`python img_validator.py <"目录路径"> [并发数]`
+
 ### YMFolderSort.py
 根据文件夹名称中的年份和月份整理文件夹
 
 ### real_pic_suffix.py
-纠正错误的图片后缀名
+纠正文件夹下错误的图片后缀名
 
 ### rename_time.ps1
 根据文件修改时间，修改文件名前缀
@@ -24,3 +29,4 @@
 
 ### deleteTC.lsp
 快速删除CAD图纸内的所有填充
+
