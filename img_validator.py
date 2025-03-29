@@ -43,7 +43,7 @@ HTML_TEMPLATE = """
         <tbody>
             {% for file in corrupted_files %}
             <tr>
-                <td>{{ file.path }}</td>
+                <td><a href="{{ file.path }}">🔗</a>{{ file.path }}</td>
                 <td>{{ file.error }}</td>
             </tr>
             {% endfor %}
