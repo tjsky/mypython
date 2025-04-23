@@ -1,11 +1,14 @@
 import os
 import sys
 import platform
-from PIL import Image
+from PIL import Image, ImageFile
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from tqdm import tqdm
 from datetime import datetime
 import jinja2
+
+# 设置图像最大像素限制（PIL库默认是89,478,485，无法应对超高清图片）
+Image.MAX_IMAGE_PIXELS = 200000000
 
 # 报告的 HTML 模板
 HTML_TEMPLATE = """
