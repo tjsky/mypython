@@ -79,13 +79,17 @@ def is_hidden_file(path):
 # 图片完整性检查
 def validate_image_file(file_path):
     try:
-        with Image.open(file_path) as img:
+        with warnings.catch_warnings():
+            warnings.filterwarnings("error", category=UserWarning, module="PIL.TiffImagePlugin")
+
+            with Image.open(file_path) as img:
             img.verify()
-        
-        with Image.open(file_path) as img:
             img.load()
-        
         return (file_path, None)
+    
+    except UserWarning as uw:
+        return (file_path, f"元数据损坏: {str(uw)}")  # 将警告转为错误信息
+
     except Exception as e:
         return (file_path, str(e))
 
