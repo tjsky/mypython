@@ -1,6 +1,9 @@
 # mypython
 自己用的一些小程序啥的,虽然仓库名里有python但其实啥都有
 
+### gif2mp4.bat
+将指定目录下的gif文件转成mp4视频
+
 ### img_validator.py
 扫描指定目录下图片文件是否有损坏的，生成html格式的报告
 
