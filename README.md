@@ -33,3 +33,6 @@
 ### deleteTC.lsp
 快速删除CAD图纸内的所有填充
 
+### start_llama_cpp.bat
+一键启动llama.cpp服务器，可配置llama与模型位置，运行方式（CPU/GPU/MoE），MoE模式下可选加载层数。
+
