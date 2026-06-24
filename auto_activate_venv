@@ -1,0 +1,45 @@
+import os
+import sys
+import subprocess
+
+def auto_bootstrap_venv():
+    script_path = os.path.abspath(__file__)
+    current_dir = os.path.dirname(script_path)
+    
+    # 定义虚拟环境及核心组件路径
+    venv_dir = os.path.join(current_dir, ".env")
+    venv_python = os.path.join(venv_dir, "Scripts", "python.exe")
+    venv_pip = os.path.join(venv_dir, "Scripts", "pip.exe")
+    
+    # 1. 如果不存在 .env 文件夹，则调用当前全局 Python 创建它
+    if not os.path.exists(venv_dir):
+        print(f"[*] 未检测到虚拟环境，正在当前目录创建 .env ...")
+        try:
+            subprocess.run([sys.executable, "-m", "venv", venv_dir], check=True)
+            print("[+] 虚拟环境 .env 创建成功！")
+            
+            # 2. 自动化安装 requirements.txt 内的依赖
+            req_file = os.path.join(current_dir, "requirements.txt")
+            if os.path.exists(req_file) and os.path.exists(venv_pip):
+                print("[*] 检测到 requirements.txt，正在自动安装项目依赖...")
+                # 执行 .env\Scripts\pip.exe install -r requirements.txt
+                subprocess.run([venv_pip, "install", "-r", req_file], check=True)
+                print("[+] 依赖安装完成！")
+                
+        except subprocess.CalledProcessError as e:
+            print(f"[-] 初始化环境失败: {e}")
+            input("按回车键退出...")
+            sys.exit(1)
+
+    current_exe = os.path.normcase(os.path.normpath(sys.executable))
+    target_exe = os.path.normcase(os.path.normpath(venv_python))
+    
+    if os.path.exists(venv_python) and current_exe != target_exe:
+        cmd = [venv_python, script_path] + sys.argv[1:]
+        sys.exit(subprocess.call(cmd))
+auto_bootstrap_venv()
+
+
+# =============================
+# 正式业务逻辑代码从下边开始
+# =============================
