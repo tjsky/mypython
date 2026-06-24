@@ -1,6 +1,9 @@
 # mypython
 自己用的一些小程序啥的,虽然仓库名里有python但其实啥都有
 
+### auto_activate_venv.py
+自动化创建和进入虚拟环境的py脚本模板
+
 ### gif2mp4.bat
 将指定目录下的gif文件转成mp4视频
 
