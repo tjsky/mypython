@@ -1,6 +1,9 @@
 # mypython
 自己用的一些小程序啥的,虽然仓库名里有python但其实啥都有
 
+### shift_ass.py
+批量调整ass字幕里的时间轴，省的用Subtitle Edit调了。
+
 ### auto_activate_venv.py
 自动化创建和进入虚拟环境的py脚本模板
 
